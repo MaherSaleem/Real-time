@@ -4,13 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../src/Real-time-project.c 
+../src/main.c \
+../src/semafors.c 
 
 OBJS += \
-./src/Real-time-project.o 
+./src/main.o \
+./src/semafors.o 
 
 C_DEPS += \
-./src/Real-time-project.d 
+./src/main.d \
+./src/semafors.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
