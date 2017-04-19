@@ -10,9 +10,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "semaphore.h"
+#include "../headers/semafors.h"
+#include "../headers/setup_configrations.h"
+
 int main(void) {
 
-
-
+	configs c = get_server_configrations();
+	print_configrations(c);
+	return 0;
 }

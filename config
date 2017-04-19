@@ -1,0 +1,5 @@
+Worker: 10
+Connection: 14
+Port: 7245 
+# Comment n=workers, m=connections, p=port
+#NOTE: no spaces must be after the number!
