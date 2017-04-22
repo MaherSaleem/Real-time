@@ -9,8 +9,15 @@
 #include <stdlib.h>
 
 
+struct myworker
+{
+    int  connections ;
+};
 
 
+
+
+void child (long  );
 
 
 /*
