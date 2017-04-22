@@ -28,6 +28,7 @@ configs get_server_configrations(){
 	struct configs ret;//create empty struct
 
 	FILE * config_file = fopen(CONFIGRATION_FILE_NAME, "r");
+
 	assert(config_file != NULL);
 
 	char temp[20];

@@ -17,5 +17,6 @@ int main(void) {
 
 	configs c = get_server_configrations();
 	print_configrations(c);
+	printf("test");
 	return 0;
 }
