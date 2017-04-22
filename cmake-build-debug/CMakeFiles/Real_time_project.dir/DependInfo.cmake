@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
+  "/Users/technology/Documents/Real-time-project/headers/our_GET.c" "/Users/technology/Documents/Real-time-project/cmake-build-debug/CMakeFiles/Real_time_project.dir/headers/our_GET.c.o"
   "/Users/technology/Documents/Real-time-project/src/connection.c" "/Users/technology/Documents/Real-time-project/cmake-build-debug/CMakeFiles/Real_time_project.dir/src/connection.c.o"
   "/Users/technology/Documents/Real-time-project/src/main.c" "/Users/technology/Documents/Real-time-project/cmake-build-debug/CMakeFiles/Real_time_project.dir/src/main.c.o"
   "/Users/technology/Documents/Real-time-project/src/semafors.c" "/Users/technology/Documents/Real-time-project/cmake-build-debug/CMakeFiles/Real_time_project.dir/src/semafors.c.o"

@@ -97,36 +97,48 @@ int main(void) {
 		exit(1);
 	}
 
-    printf("\ns\n");
+	printf("\ns\n");
 
 	fd_set rfds;
 	int retval;
 
 	/* Watch stdin (fd 0) to see when it has input. */
- struct timeval waitTime = {0,0};
+	struct timeval waitTime = {0, 0};
 
 
 	/* Don’t rely on the value of tv now! */
-	while (1){
+	while (1) {
 
-        FD_ZERO(&rfds);
-        FD_SET(fd, &rfds);
+		FD_ZERO(&rfds);
+		FD_SET(fd, &rfds);
 
-        retval = select(1, &rfds, NULL, NULL, &waitTime);
 
-        if (FD_ISSET(fd, &rfds)) {
-            printf("maher\n");
+		retval = select(fd + 1, &rfds, NULL, NULL, &waitTime);
+
+
+		//printf("%d\n", retval);
+int val ;
+		if (FD_ISSET(fd, &rfds)) {
+
 			srand(time(NULL));   // should only be called once
 			do {
 				r = rand() % c.n;
-			} while (get_semafor_value(semid, r) > 0);
+				//printf("%d\n", r);
+				val = get_semafor_value(semid, r);
+			} while (val < 0);
+			int newfd; /* returned by accept() */
+			newfd = accept(fd, (struct sockaddr*) &clientAddr, &addr_size);
+			printf("I am here\n");
 
-			goto out ;
+
 		}
-}
+	}
+
 	out:
-	if(r!= -1 && getpid() == process[r])
-		child(process[r]);
+	while (1){
+
+
+}
 
 	return 0;
 

@@ -123,6 +123,33 @@ Real_time_project/fast:
 	$(MAKE) -f CMakeFiles/Real_time_project.dir/build.make CMakeFiles/Real_time_project.dir/build
 .PHONY : Real_time_project/fast
 
+headers/our_GET.o: headers/our_GET.c.o
+
+.PHONY : headers/our_GET.o
+
+# target to build an object file
+headers/our_GET.c.o:
+	$(MAKE) -f CMakeFiles/Real_time_project.dir/build.make CMakeFiles/Real_time_project.dir/headers/our_GET.c.o
+.PHONY : headers/our_GET.c.o
+
+headers/our_GET.i: headers/our_GET.c.i
+
+.PHONY : headers/our_GET.i
+
+# target to preprocess a source file
+headers/our_GET.c.i:
+	$(MAKE) -f CMakeFiles/Real_time_project.dir/build.make CMakeFiles/Real_time_project.dir/headers/our_GET.c.i
+.PHONY : headers/our_GET.c.i
+
+headers/our_GET.s: headers/our_GET.c.s
+
+.PHONY : headers/our_GET.s
+
+# target to generate assembly for a file
+headers/our_GET.c.s:
+	$(MAKE) -f CMakeFiles/Real_time_project.dir/build.make CMakeFiles/Real_time_project.dir/headers/our_GET.c.s
+.PHONY : headers/our_GET.c.s
+
 src/connection.o: src/connection.c.o
 
 .PHONY : src/connection.o
@@ -294,6 +321,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... Real_time_project"
+	@echo "... headers/our_GET.o"
+	@echo "... headers/our_GET.i"
+	@echo "... headers/our_GET.s"
 	@echo "... src/connection.o"
 	@echo "... src/connection.i"
 	@echo "... src/connection.s"

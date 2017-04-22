@@ -85,6 +85,9 @@
 		<Unit filename="/Users/technology/Documents/Real-time-project/headers/connection.h">
 			<Option target="Real_time_project"/>
 		</Unit>
+		<Unit filename="/Users/technology/Documents/Real-time-project/headers/our_GET.c">
+			<Option target="Real_time_project"/>
+		</Unit>
 		<Unit filename="/Users/technology/Documents/Real-time-project/headers/semafors.h">
 			<Option target="Real_time_project"/>
 		</Unit>
