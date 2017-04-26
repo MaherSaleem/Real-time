@@ -17,7 +17,7 @@ struct myworker
 
 
 
-void child (long  );
+void child (int r );
 
 
 /*

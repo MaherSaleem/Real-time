@@ -7,8 +7,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <assert.h>
-#define CHUNCK_SIZE 20
-#define DEFAULT_PATH "serverpath/"
 
 void get_file_by_GET_command(char * getCommand) {
 	char path[50];
