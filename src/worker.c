@@ -9,6 +9,8 @@
 #include "../headers/worker.h"
 #include "../headers/setup_configrations.h"
 #include "../headers/server_signals.h"
+#include "../headers/sharedMemory.h"
+
 #include <unistd.h>
 
 #include <stdio.h>
@@ -21,6 +23,7 @@
 #include <arpa/inet.h>
 #include <time.h>
 #include <signal.h>
+#include <sys/shm.h>
 #include "../headers/Globals.h"
 
 
@@ -35,7 +38,7 @@ void child (int r){
 
 	//Acquire
 	current_value = acquire_sem(semid, r);
-	printf("new value of semafor is %d", current_value);
+	printf("\nnew value of semafor is %d", current_value);
 
 	//accept
 	struct sockaddr_in clientAddr;
@@ -46,7 +49,7 @@ void child (int r){
 
 	//relase
 	current_value = release_sem(semid, r);
-	printf("again value of semafor is %d", current_value);
+	printf("\nagain value of semafor is %d", current_value);
 	addr_size = sizeof(clientAddr);
 	printf("\nDONE !!\n");
 
@@ -55,12 +58,21 @@ void child (int r){
 
 
 void handle_connection(int sig){
-	int r = get_process_index_by_id();
+	//int r = get_process_index_by_id();
+
+	// create sharedMemory
+	int shm_id = open_segment(shmKey, MEM_SIZE);
+
+	//attaching process address space to this sh mem
+	char * mem_base_address = (char *)shmat(shm_id, NULL, 0);
+	int r = (int)*mem_base_address;
+	printf("\n ... %d ... \n",r);
+
 	if (r == -1)
 		perror("PID not found");
 	else
 		child(r);
-	exit(1);
+
 }
 
 

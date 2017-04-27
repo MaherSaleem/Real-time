@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include "../headers/semafors.h"
 #include "../headers/worker.h"
+#include "../headers/sharedMemory.h"
 #include "../headers/setup_configrations.h"
 #include "../headers/server_signals.h"
 #include <unistd.h>
@@ -26,6 +27,8 @@
 #include <arpa/inet.h>
 #include <time.h>
 #include <signal.h>
+#include <sys/shm.h>
+
 
 
 #define KNRM  "\x1B[0m"
@@ -59,6 +62,12 @@ int main(void) {
 	for (i = 0; i < c.n; i++) {
 		init_sem(semid, i, c.m);
 	}
+
+	// create sharedMemory
+	int shm_id = open_segment(shmKey, MEM_SIZE);
+
+	//attaching process address space to this sh mem
+	char * mem_base_address = (char *)shmat(shm_id, NULL, 0);
 
 
 	if (VERBOS)
@@ -142,11 +151,15 @@ int main(void) {
 			val = get_semafor_value(semid, r);
 			if (VERBOS)
 				printf("r choosed is :%d\n", r);
+
+
+			*mem_base_address = (char)r; // now max index is 255
+
 			kill(process[r], SIGUSR2);
 			if (VERBOS)
 				printf("Code Reached Here:3\n");
 
-			exit(1);
+
 		}
 	}
 
