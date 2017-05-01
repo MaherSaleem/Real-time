@@ -29,36 +29,49 @@
 
 void child (int r){
 
+	int  nBytes;
+	char buffer[1024];
 
 
+	printf("%%%%%%%%%%%%%%%%%% INSIDE HANDLING REQUEST%%%%%%%%%%%%%%%%\n");
 	//print current value of semafor
 	int semid = get_semafor(semKey, c.n);
 	int current_value = get_semafor_value(semid, 1);
-	printf("current value of semafor is %d", current_value);
+	printf("current value of semafor is %d\n", current_value);
 
 	//Acquire
 	current_value = acquire_sem(semid, r);
-	printf("\nnew value of semafor is %d", current_value);
+	printf("new value of semafor is %d\n", current_value);
 
 	//accept
 	struct sockaddr_in clientAddr;
 	socklen_t addr_size;
 	addr_size = sizeof(clientAddr);
 	int newfd = accept(fd, (struct sockaddr*) &clientAddr, &addr_size);
-	printf("\nDONE !!\n");
+
+	//read the GET command from client
+	if((nBytes = read(newfd, buffer, 1024)) < 0) {
+	        perror("read");
+	        exit(1);
+	}
+	else{
+		printf("\nClient has requested %s\n", buffer);
+		get_file_by_GET_command(buffer, newfd);//
+	}
+
+	//send html file
 
 	//relase
 	current_value = release_sem(semid, r);
 	printf("\nagain value of semafor is %d", current_value);
 	addr_size = sizeof(clientAddr);
-	printf("\nDONE !!\n");
+	printf("%%%%%%%%%%%%%%%%%% Finished HANDLING REQUEST%%%%%%%%%%%%%%%%\n");
 
 
 }
 
 
 void handle_connection(int sig){
-	//int r = get_process_index_by_id();
 
 	// create sharedMemory
 	int shm_id = open_segment(shmKey, MEM_SIZE);
@@ -66,7 +79,6 @@ void handle_connection(int sig){
 	//attaching process address space to this sh mem
 	char * mem_base_address = (char *)shmat(shm_id, NULL, 0);
 	int r = (int)*mem_base_address;
-	printf("\n ... %d ... \n",r);
 
 	if (r == -1)
 		perror("PID not found");

@@ -50,6 +50,9 @@ int main(void) {
 	//read the configrations
 	print_configrations(c);
 
+
+
+
 	int pos = 0;
 	int i;
 	int r = -1; // the choosen worker to handle the request
@@ -117,9 +120,11 @@ int main(void) {
 
 	}
 
+	printf("#####################################\n");
 	//print the ids of children
 	for (i = 0; i < c.n; i++)
-		printf("%d\n", process[i]);
+		printf("Worker#%d is created with id %d\n",i, process[i]);
+	printf("#####################################\n");
 
 
 	//create set for fds to check if there is any client want to
@@ -156,6 +161,7 @@ int main(void) {
 			*mem_base_address = (char)r; // now max index is 255
 
 			kill(process[r], SIGUSR2);
+			sleep(100);
 			if (VERBOS)
 				printf("Code Reached Here:3\n");
 
