@@ -14,7 +14,7 @@
 void reload_config_file(int sig);
 void restart_server(int sig);
 void stop_server(int sig);
-void handle_connection();
+void handle_connection(int sig);
 
 
 
