@@ -25,6 +25,7 @@
 #include <signal.h>
 #include <sys/shm.h>
 #include "../headers/Globals.h"
+#include "../headers/MessageQ.h"
 
 
 void child (int r){
@@ -71,30 +72,31 @@ void child (int r){
 }
 
 
-void handle_connection(int sig){
+void handle_connection(){
+	printf("!!!Inside handler\n");
+	while(1){
+		struct msg p = getUserCommand(getpid());
 
-	// create sharedMemory
-	int shm_id = open_segment(shmKey, MEM_SIZE);
-
-	//attaching process address space to this sh mem
-	char * mem_base_address = (char *)shmat(shm_id, NULL, 0);
-	int r = (int)*mem_base_address;
-
-	if (r == -1)
-		perror("PID not found");
-	else
-		child(r);
-
+		//attaching process address space to this sh mem
+		int r = get_process_index_by_id();
+		if (r == -1)
+			perror("PID not found");
+		else
+			child(r);
+	}
 }
 
 
 int get_process_index_by_id(){
+	// create sharedMemory
+	int shm_id = open_segment(shmKey, MEM_SIZE);
+	int * mem_base_address = (int *)shmat(shm_id, NULL, 0);
 	int pid = getpid();
 	printf("<<%d>>\n",pid);
 	int i = 0;
 	for (i = 0; i < c.n; ++i) {
-		printf("((%d))\n",process[i]);
-		if (pid == process[i])
+		printf("((%d))\n",mem_base_address[i]);
+		if (pid == mem_base_address[i])
 			return i;
 	}
 	return -1;

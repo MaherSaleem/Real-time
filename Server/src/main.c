@@ -1,5 +1,5 @@
 /*
- ============================================================================
+============================================================================
  Name        : Real-time-project.c
  Author      : Maher
  Version     :
@@ -15,6 +15,7 @@
 #include "../headers/sharedMemory.h"
 #include "../headers/setup_configrations.h"
 #include "../headers/server_signals.h"
+#include "../headers/MessageQ.h"
 #include <unistd.h>
 
 #include <stdio.h>
@@ -70,7 +71,7 @@ int main(void) {
 	int shm_id = open_segment(shmKey, MEM_SIZE);
 
 	//attaching process address space to this sh mem
-	char * mem_base_address = (char *)shmat(shm_id, NULL, 0);
+	int * mem_base_address = (int *)shmat(shm_id, NULL, 0);
 
 
 	if (VERBOS)
@@ -111,10 +112,11 @@ int main(void) {
 		} else if (pid == 0) {
 
 //			printf("%d\n", getpid());
-			signal(SIGUSR2, handle_connection); //connect the signal for each child to handle connection
-			goto out;
+			handle_connection();
 		} else {
 			process[i] = pid; //store the id of the child
+			mem_base_address[i] = pid; // now max index is 255
+
 //			printf("parent\n");
 		}
 
@@ -150,18 +152,18 @@ int main(void) {
 		int val;
 		if (FD_ISSET(fd, &rfds)) {
 
+			printf("MMMMMMMMMMMMMMMMM\n");
 			srand(time(NULL));   // should only be called once
 
 			r = rand() % c.n;   // TODO make algorithm to choose r
+			r = 1;
 			val = get_semafor_value(semid, r);
 			if (VERBOS)
 				printf("r choosed is :%d\n", r);
 
-
-			*mem_base_address = (char)r; // now max index is 255
-
-			kill(process[r], SIGUSR2);
-			sleep(100);
+			sendUser(process[r]);
+//			kill(process[r], SIGUSR2);
+			sleep(1);
 			if (VERBOS)
 				printf("Code Reached Here:3\n");
 
@@ -176,7 +178,3 @@ int main(void) {
 	return 0;
 
 }
-
-
-
-
