@@ -35,7 +35,6 @@ int main(){
     perror("connect\n"); 
     exit(1);
   }
-
   //waiting for user to Enter GET requets
   printf(">>");
   fgets(buffer,1024,stdin);

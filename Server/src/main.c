@@ -1,13 +1,3 @@
-/*
-============================================================================
- Name        : Real-time-project.c
- Author      : Maher
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
- ============================================================================
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "../headers/semafors.h"
@@ -15,7 +5,6 @@
 #include "../headers/sharedMemory.h"
 #include "../headers/setup_configrations.h"
 #include "../headers/server_signals.h"
-#include "../headers/MessageQ.h"
 #include <unistd.h>
 
 #include <stdio.h>
@@ -41,17 +30,75 @@
 #define KCYN  "\x1B[36m"
 #define KWHT  "\x1B[37m"
 #include "../headers/Globals.h"
+#include "../headers/MessageQ.h"
+
+#define VERBOS 1
+int checkallsem(int semid);
+char *path;
+int oldpid;
+
+int restartVar=0;
+int flagstop=0;
+
+
+void (* old_handler)(int);
+
+
+void stop_server(int sig){
+	flagstop=1;
+	signal(SIGINT , stop_server);
+}
+
+
+void restart_server(int sig){
+	oldpid=getpid();
+	restartVar=1;
+	char buffer[10];
+	sprintf(buffer, "%d", oldpid);
+	strcat(path, " ");
+	strcat(path,buffer);
+	printf("%s\n",path);
+	system(path);
+
+
+
+}
 
 #define VERBOS 1
 
+int checkallsem(int semid)
+{
+	int i;
+	int current_value;
+	for (i = 0; i < c.n; i++) {
+		current_value = get_semafor_value(semid, i);
+		printf("Sempgores free are %d\n" , current_value);
+		if (current_value != c.m)
+			return 1;
 
-int main(void) {
+	}
+
+	return 0 ;
+}
+
+
+int main(int argc ,char *argv[]) {
 
 	c = get_server_configrations();
 	//read the configrations
 	print_configrations(c);
 
 
+	if (argc >=2) {
+			signal(SIGTERM, stop_server);
+			signal(SIGHUP, restart_server);
+			setsid();
+			printf("%s\n", argv[1]);
+			int myold =atoi(argv);
+			kill(myold, SIGTERM);
+			printf("HIIIIIIIII\n");
+
+	}
 
 
 	int pos = 0;
@@ -141,7 +188,11 @@ int main(void) {
 		printf("Code Reached Here:2\n");
 
 // now waiting for any connection to assign it to a Worker
-	while (1) {
+	while (!flagstop) {
+
+		int mypid=getpid();
+		signal(SIGTERM, stop_server);
+		signal(SIGHUP, restart_server);
 
 		FD_ZERO(&rfds);
 		FD_SET(fd, &rfds);
@@ -162,14 +213,18 @@ int main(void) {
 				printf("r choosed is :%d\n", r);
 
 			sendUser(process[r]);
-//			kill(process[r], SIGUSR2);
-			sleep(1);
+			sleep(100);
 			if (VERBOS)
 				printf("Code Reached Here:3\n");
 
 
 		}
 	}
+
+	while (checkallsem(semid));
+	printf("Signal Handeld");
+	exit(0);
+
 
 	out: while (1) {
 		sleep(1);
