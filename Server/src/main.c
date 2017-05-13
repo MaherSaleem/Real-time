@@ -94,14 +94,13 @@ int main(int argc ,char *argv[]) {
 			signal(SIGHUP, restart_server);
 			setsid();
 			printf("%s\n", argv[1]);
-			int myold =atoi(argv);
+			int myold = atoi(argv[1]);
 			kill(myold, SIGTERM);
 			printf("HIIIIIIIII\n");
 
 	}
 
 
-	int pos = 0;
 	int i;
 	int r = -1; // the choosen worker to handle the request
 	process = (int *) malloc(c.n * sizeof(int));
@@ -188,11 +187,13 @@ int main(int argc ,char *argv[]) {
 		printf("Code Reached Here:2\n");
 
 // now waiting for any connection to assign it to a Worker
+	r=1;
 	while (!flagstop) {
 
 		int mypid=getpid();
 		signal(SIGTERM, stop_server);
 		signal(SIGHUP, restart_server);
+		signal(SIGUSR1, restart_server);
 
 		FD_ZERO(&rfds);
 		FD_SET(fd, &rfds);
@@ -201,19 +202,27 @@ int main(int argc ,char *argv[]) {
 
 		//printf("%d\n", ret_val);
 		int val;
-		if (FD_ISSET(fd, &rfds)) {
+
+		if (ret_val >0) {
+			printf("$$$$$$%d\n", ret_val);
 
 			printf("MMMMMMMMMMMMMMMMM\n");
 			srand(time(NULL));   // should only be called once
+			printf("MMMMMMMMMMMMMMMMM\n");
 
-			r = rand() % c.n;   // TODO make algorithm to choose r
-			r = 1;
+//			r = rand() % c.n;   // TODO make algorithm to choose r
+			r=(r+1) % c.n;// TODO remove this
 			val = get_semafor_value(semid, r);
 			if (VERBOS)
 				printf("r choosed is :%d\n", r);
 
 			sendUser(process[r]);
-			sleep(100);
+			printf("YYY1\n");
+			mem_base_address[c.n+7] = '*';
+
+			while(mem_base_address[c.n+7] == '*');
+			printf("YYY2\n");
+
 			if (VERBOS)
 				printf("Code Reached Here:3\n");
 

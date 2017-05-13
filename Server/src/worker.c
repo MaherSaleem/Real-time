@@ -33,11 +33,13 @@ void child (int r){
 	int  nBytes;
 	char buffer[1024];
 
+	int shm_id = open_segment(shmKey, MEM_SIZE);
+	int * mem_base_address = (int *)shmat(shm_id, NULL, 0);
 
 	printf("%%%%%%%%%%%%%%%%%% INSIDE HANDLING REQUEST%%%%%%%%%%%%%%%%\n");
 	//print current value of semafor
 	int semid = get_semafor(semKey, c.n);
-	int current_value = get_semafor_value(semid, 1);
+	int current_value = get_semafor_value(semid, r);
 	printf("current value of semafor is %d\n", current_value);
 
 	//Acquire
@@ -49,7 +51,9 @@ void child (int r){
 	socklen_t addr_size;
 	addr_size = sizeof(clientAddr);
 	int newfd = accept(fd, (struct sockaddr*) &clientAddr, &addr_size);
-
+	printf("%d\n",mem_base_address[c.n+7 ]);
+	mem_base_address[c.n+7] = '_';
+	printf("%d\n",mem_base_address[c.n+7 ]);
 	//read the GET command from client
 	if((nBytes = read(newfd, buffer, 1024)) < 0) {
 	        perror("read");
