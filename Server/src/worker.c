@@ -51,24 +51,36 @@ void child (int r){
 	socklen_t addr_size;
 	addr_size = sizeof(clientAddr);
 	int newfd = accept(fd, (struct sockaddr*) &clientAddr, &addr_size);
-	printf("%d\n",mem_base_address[c.n+7 ]);
+	printf("1=%c\n",mem_base_address[c.n+7 ]);
 	mem_base_address[c.n+7] = '_';
-	printf("%d\n",mem_base_address[c.n+7 ]);
+	printf("2=%c\n",mem_base_address[c.n+7 ]);
 	//read the GET command from client
 	if((nBytes = read(newfd, buffer, 1024)) < 0) {
 	        perror("read");
 	        exit(1);
 	}
 	else{
-		printf("\nClient has requested %s\n", buffer);
-		get_file_by_GET_command(buffer, newfd);//
+//		printf("\nClient has requested %s\n", buffer);
+		////////////////////
+
+		int j,k=4;
+		int len = strlen(buffer);
+		char	buff2 [1024] = "GET ";
+		for (j = 5; j < len; ++j) {
+			if (buffer[j] == ' ') break;
+			buff2[k++]= buffer[j];
+
+		}
+		buff2[k] = '\n';
+		/////////////////////
+		get_file_by_GET_command(buff2, newfd);//
 	}
 
 	//send html file
 
 	//relase
 	current_value = release_sem(semid, r);
-	printf("\nagain value of semafor is %d", current_value);
+	printf("again value of semafor is %d\n", current_value);
 	addr_size = sizeof(clientAddr);
 	printf("%%%%%%%%%%%%%%%%%% Finished HANDLING REQUEST%%%%%%%%%%%%%%%%\n");
 
@@ -96,10 +108,10 @@ int get_process_index_by_id(){
 	int shm_id = open_segment(shmKey, MEM_SIZE);
 	int * mem_base_address = (int *)shmat(shm_id, NULL, 0);
 	int pid = getpid();
-	printf("<<%d>>\n",pid);
+//	printf("<<%d>>\n",pid);
 	int i = 0;
 	for (i = 0; i < c.n; ++i) {
-		printf("((%d))\n",mem_base_address[i]);
+//		printf("((%d))\n",mem_base_address[i]);
 		if (pid == mem_base_address[i])
 			return i;
 	}

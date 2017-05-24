@@ -30,8 +30,7 @@ void get_file_by_path(char * path, int fd) {
 	strcat(server_path, path);
 	FILE * f = fopen(server_path, "r");
 	if (f == NULL) {
-		char error_command[50] = "GET error404.html\n";
-		get_file_by_GET_command(error_command, fd);
+		send_requested_file("serverpath/error404.html", fd);
 
 	} else {
 		send_requested_file(server_path , fd);
@@ -51,11 +50,13 @@ void print_requested_file(char * path, int fd) {
 }
 
 void send_requested_file(char * path, int newFd) {
+	printf("%s\n",path);
 	FILE * file = fopen(path, "r");
 	char buf[CHUNCK_SIZE];
 	int nbytes;
 	while ((nbytes = fread(buf, 1, sizeof buf, file)) > 0) {
 	      write(newFd, buf, sizeof(buf));// sending data
 	}
+	printf("All data sent to server!\n");
 	fclose(file);
 }

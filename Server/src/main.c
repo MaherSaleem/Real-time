@@ -34,31 +34,56 @@
 
 #define VERBOS 1
 int checkallsem(int semid);
-char *path;
+char path[50] = "./Debug/Real-time-project";
 int oldpid;
 
 int restartVar=0;
 int flagstop=0;
+int semid;
+int * mem_base_address;
 
 
 void (* old_handler)(int);
 
 
 void stop_server(int sig){
+
+
 	flagstop=1;
 	signal(SIGINT , stop_server);
 }
 
 
 void restart_server(int sig){
+	printf("Restarting...\n");
 	oldpid=getpid();
 	restartVar=1;
 	char buffer[10];
+
 	sprintf(buffer, "%d", oldpid);
 	strcat(path, " ");
 	strcat(path,buffer);
 	printf("%s\n",path);
+	setsid();
+
+
+	while (checkallsem(semid));
+		printf("inside Stopping server\n");
+		int y=0;
+		for ( y = 0; y < c.n; y++) {
+			kill(mem_base_address[y],9);
+			printf("kill %d child !\n", y);
+		}
+		printf("Server stopped Working\n");
+
+
 	system(path);
+
+	printf("Server Restarted!\n");
+
+
+
+
 
 
 
@@ -84,19 +109,23 @@ int checkallsem(int semid)
 
 int main(int argc ,char *argv[]) {
 
+
+
 	c = get_server_configrations();
 	//read the configrations
 	print_configrations(c);
 
 
 	if (argc >=2) {
-			signal(SIGTERM, stop_server);
-			signal(SIGHUP, restart_server);
-			setsid();
-			printf("%s\n", argv[1]);
-			int myold = atoi(argv[1]);
-			kill(myold, SIGTERM);
-			printf("HIIIIIIIII\n");
+
+			printf("%s  %d\n", argv[1] , getpid());
+			char path[50]="kill -9 ";
+			strcat(path,argv[1]);
+			system(path);
+
+			printf("%s\n",path);
+			//kill(myold, 15);
+
 
 	}
 
@@ -106,7 +135,7 @@ int main(int argc ,char *argv[]) {
 	process = (int *) malloc(c.n * sizeof(int));
 
 	//create semaphore set with length n
-	int semid = get_semafor(semKey, c.n);
+	semid = get_semafor(semKey, c.n);
 
 	//set the inirial value for each semphore to m
 	for (i = 0; i < c.n; i++) {
@@ -117,7 +146,7 @@ int main(int argc ,char *argv[]) {
 	int shm_id = open_segment(shmKey, MEM_SIZE);
 
 	//attaching process address space to this sh mem
-	int * mem_base_address = (int *)shmat(shm_id, NULL, 0);
+	  mem_base_address = (int *)shmat(shm_id, NULL, 0);
 
 
 	if (VERBOS)
@@ -188,7 +217,11 @@ int main(int argc ,char *argv[]) {
 
 // now waiting for any connection to assign it to a Worker
 	r=1;
+	flagstop = 0;
+
 	while (!flagstop) {
+
+//		printf("Sehweil :) \n");
 
 		int mypid=getpid();
 		signal(SIGTERM, stop_server);
@@ -204,34 +237,36 @@ int main(int argc ,char *argv[]) {
 		int val;
 
 		if (ret_val >0) {
-			printf("$$$$$$%d\n", ret_val);
+			printf("Connection came\n");
 
-			printf("MMMMMMMMMMMMMMMMM\n");
 			srand(time(NULL));   // should only be called once
-			printf("MMMMMMMMMMMMMMMMM\n");
 
-//			r = rand() % c.n;   // TODO make algorithm to choose r
-			r=(r+1) % c.n;// TODO remove this
+			r=(r+1) % c.n;
 			val = get_semafor_value(semid, r);
 			if (VERBOS)
 				printf("r choosed is :%d\n", r);
 
-			sendUser(process[r]);
-			printf("YYY1\n");
 			mem_base_address[c.n+7] = '*';
 
-			while(mem_base_address[c.n+7] == '*');
-			printf("YYY2\n");
+			sendUser(process[r]);
 
+			while(mem_base_address[c.n+7] == '*');
 			if (VERBOS)
 				printf("Code Reached Here:3\n");
 
 
 		}
+
 	}
 
+	killAll:
 	while (checkallsem(semid));
-	printf("Signal Handeld");
+	printf("inside Stopping server\n");
+	int y=0;
+	for ( y = 0; y < c.n; ++y) {
+		kill(mem_base_address[y],15);
+	}
+	printf("Server stopped Working\n");
 	exit(0);
 
 

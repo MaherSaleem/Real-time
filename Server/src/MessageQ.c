@@ -17,8 +17,10 @@
 	}
 
 	void sendUser(int pid){
+		printf("inside send message to worker\n");
 		struct msg p;
 		int m = msgget(messageQ_KEY,0666|IPC_CREAT); // since the queue is created before,it just will create it
 		p.type = pid;
 		msgsnd(m,&p,sizeof(p) -4 ,0);// send pointer to p on the queue
+		printf("finished send message to worker\n");
 	}

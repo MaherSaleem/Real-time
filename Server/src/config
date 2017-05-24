@@ -1,4 +1,4 @@
-Worker: 2
+Worker: 10
 Connection: 4
 Port: 7245 
 # Comment n=workers, m=connections, p=port
