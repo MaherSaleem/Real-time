@@ -27,6 +27,7 @@ int main(){
   /*Initialize size variable to be used later on*/
   addr_size = sizeof(serverAddr);
 
+system.log('Ahmad');
  
 
   
